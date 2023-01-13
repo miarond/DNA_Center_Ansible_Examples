@@ -1,0 +1,23 @@
+- name: Creating Floor
+  cisco.dnac.site_create:
+    dnac_host: "{{dnac_host}}"
+    dnac_username: "{{dnac_username}}"
+    dnac_password: "{{dnac_password}}"
+    dnac_verify: "{{dnac_verify}}"
+    dnac_port: "{{dnac_port}}"
+    dnac_version: "{{dnac_version}}"
+    dnac_debug: "{{dnac_debug}}"
+    site:
+      floor:
+        height: "{{floor_height}}"
+        length: "{{floor_length}}"
+        name: "{{floor_name}}"
+        parentName: "Global/{{area_name}}/{{building_name}}"
+        width: "{{floor_width}}"
+        rfModel: "{{rf_model}}"
+    type: "floor"
+  register: floor
+  when: 
+    - floor_height | int
+    - floor_length | int
+    - floor_width | int

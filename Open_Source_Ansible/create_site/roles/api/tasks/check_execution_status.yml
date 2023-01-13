@@ -1,0 +1,15 @@
+- name: Checking Execution Status
+  cisco.dnac.dnacaap_management_execution_status_info:
+    dnac_host: "{{dnac_host}}"
+    dnac_username: "{{dnac_username}}"
+    dnac_password: "{{dnac_password}}"
+    dnac_verify: "{{dnac_verify}}"
+    dnac_port: "{{dnac_port}}"
+    dnac_version: "{{dnac_version}}"
+    dnac_debug: "{{dnac_debug}}"
+    executionId: "{{id}}"
+  register: status
+  until: status.dnac_response.status in ["SUCCESS", "FAILURE"]
+  failed_when: status.dnac_response.status == "FAILURE"
+  retries: 10
+  delay: 2

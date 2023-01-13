@@ -1,0 +1,133 @@
+---
+- name: Create Site Heirarchy in DNA Center
+  hosts: dnac_servers
+  any_errors_fatal: true
+  vars_files:
+    - credentials.yml
+    - myvars.yml
+  gather_facts: no
+  tasks:
+    - name: Create Area
+      cisco.dnac.site_create:
+        dnac_host: "{{dnac_host}}"
+        dnac_username: "{{dnac_username}}"
+        dnac_password: "{{dnac_password}}"
+        dnac_verify: "{{dnac_verify}}"
+        dnac_port: "{{dnac_port}}"
+        dnac_version: "{{dnac_version}}"
+        dnac_debug: "{{dnac_debug}}"
+        site:
+          area:
+            name: "{{area_name}}"
+            parentName: "Global"
+        type: "area"
+      register: area
+
+    - debug:
+        var: area
+
+    - name: Check Execution Status
+      cisco.dnac.dnacaap_management_execution_status_info:
+        dnac_host: "{{dnac_host}}"
+        dnac_username: "{{dnac_username}}"
+        dnac_password: "{{dnac_password}}"
+        dnac_verify: "{{dnac_verify}}"
+        dnac_port: "{{dnac_port}}"
+        dnac_version: "{{dnac_version}}"
+        dnac_debug: "{{dnac_debug}}"
+        executionId: "{{area.dnac_response.executionId}}"
+      register: area_status
+      until: area_status.dnac_response.status in ["SUCCESS", "FAILURE"]
+      failed_when: area_status.dnac_response.status == "FAILURE"
+      retries: 10
+      delay: 2
+
+    - debug:
+        var: area_status
+          
+    - name: Create Building
+      cisco.dnac.site_create:
+        dnac_host: "{{dnac_host}}"
+        dnac_username: "{{dnac_username}}"
+        dnac_password: "{{dnac_password}}"
+        dnac_verify: "{{dnac_verify}}"
+        dnac_port: "{{dnac_port}}"
+        dnac_version: "{{dnac_version}}"
+        dnac_debug: "{{dnac_debug}}"
+        site:
+          building:
+            address: "{{building_address}}"
+            latitude: "{{building_lat}}"
+            longitude: "{{building_long}}"
+            name: "{{building_name}}"
+            parentName: "Global/{{area_name}}"
+        type: "building"
+      register: building
+      when: 
+        - building_lat | float
+        - building_long | float
+
+    - debug:
+        var: building
+
+    - name: Check Execution Status
+      cisco.dnac.dnacaap_management_execution_status_info:
+        dnac_host: "{{dnac_host}}"
+        dnac_username: "{{dnac_username}}"
+        dnac_password: "{{dnac_password}}"
+        dnac_verify: "{{dnac_verify}}"
+        dnac_port: "{{dnac_port}}"
+        dnac_version: "{{dnac_version}}"
+        dnac_debug: "{{dnac_debug}}"
+        executionId: "{{building.dnac_response.executionId}}"
+      register: building_status
+      until: building_status.dnac_response.status in ["SUCCESS", "FAILURE"]
+      failed_when: building_status.dnac_response.status == "FAILURE"
+      retries: 10
+      delay: 2
+
+    - debug:
+        var: building_status
+          
+    - name: Create Floor 1
+      cisco.dnac.site_create:
+        dnac_host: "{{dnac_host}}"
+        dnac_username: "{{dnac_username}}"
+        dnac_password: "{{dnac_password}}"
+        dnac_verify: "{{dnac_verify}}"
+        dnac_port: "{{dnac_port}}"
+        dnac_version: "{{dnac_version}}"
+        dnac_debug: "{{dnac_debug}}"
+        site:
+          floor:
+            height: "{{floor_height}}"
+            length: "{{floor_length}}"
+            name: "{{floor_name}}"
+            parentName: "Global/{{area_name}}/{{building_name}}"
+            width: "{{floor_width}}"
+            rfModel: "{{rf_model}}"
+        type: "floor"
+      register: floor
+      when: 
+        - floor_height | int
+        - floor_length | int
+        - floor_width | int
+
+    - debug:
+        var: floor
+    
+    - name: Check Execution Status
+      cisco.dnac.dnacaap_management_execution_status_info:
+        dnac_host: "{{dnac_host}}"
+        dnac_username: "{{dnac_username}}"
+        dnac_password: "{{dnac_password}}"
+        dnac_verify: "{{dnac_verify}}"
+        dnac_port: "{{dnac_port}}"
+        dnac_version: "{{dnac_version}}"
+        dnac_debug: "{{dnac_debug}}"
+        executionId: "{{floor.dnac_response.executionId}}"
+      register: floor_status
+      until: floor_status.dnac_response.status in ["SUCCESS", "FAILURE"]
+      failed_when: floor_status.dnac_response.status == "FAILURE"
+      retries: 10
+      delay: 2

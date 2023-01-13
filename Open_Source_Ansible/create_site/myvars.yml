@@ -1,0 +1,13 @@
+---
+area_name: The White House
+
+building_name: West Wing
+building_address: 1600 Pennsylvania Ave. NW, Washington, DC 20500
+building_lat: 38.898
+building_long: -77.037
+
+floor_name: Situation Room
+floor_height: 10
+floor_length: 74
+floor_width: 74
+rf_model: Cubes And Walled Offices

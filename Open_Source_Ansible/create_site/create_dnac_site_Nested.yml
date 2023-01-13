@@ -1,0 +1,27 @@
+---
+- name: Create Site Heirarchy in DNA Center
+  hosts: dnac_servers
+  vars_files:
+    - credentials.yml
+    - myvars.yml
+  gather_facts: no
+  tasks:
+    - import_tasks: "roles/site/tasks/create_area.yml"
+    - debug:
+        var: area
+    - import_tasks: "roles/api/tasks/check_execution_status.yml"
+      vars:
+        id: "{{area.dnac_response.executionId}}"
+    - import_tasks: "roles/site/tasks/create_building.yml"
+    - debug:
+        var: building
+    - import_tasks: "roles/api/tasks/check_execution_status.yml"
+      vars:
+        id: "{{building.dnac_response.executionId}}"
+    - import_tasks: "roles/site/tasks/create_floor.yml"
+    - debug:
+        var: floor
+    - import_tasks: "roles/api/tasks/check_execution_status.yml"
+      vars:
+        id: "{{floor.dnac_response.executionId}}"
+    

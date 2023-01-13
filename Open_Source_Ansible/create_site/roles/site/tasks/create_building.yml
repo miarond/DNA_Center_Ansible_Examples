@@ -1,0 +1,21 @@
+- name: Creating Building
+  cisco.dnac.site_create:
+    dnac_host: "{{dnac_host}}"
+    dnac_username: "{{dnac_username}}"
+    dnac_password: "{{dnac_password}}"
+    dnac_verify: "{{dnac_verify}}"
+    dnac_port: "{{dnac_port}}"
+    dnac_version: "{{dnac_version}}"
+    dnac_debug: "{{dnac_debug}}"
+    site:
+      building:
+        address: "{{building_address}}"
+        latitude: "{{building_lat}}"
+        longitude: "{{building_long}}"
+        name: "{{building_name}}"
+        parentName: "Global/{{area_name}}"
+    type: "building"
+  register: building
+  when: 
+    - building_lat | float
+    - building_long | float

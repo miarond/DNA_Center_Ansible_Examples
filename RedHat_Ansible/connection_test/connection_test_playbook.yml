@@ -1,0 +1,32 @@
+---
+- name: Run a DNA Center API Connectivity Test
+  hosts: dnac_servers
+  any_errors_fatal: true
+  gather_facts: false
+  vars:
+    dnac_vars: &dnac_vars
+      dnac_host: "{{ dnac_host }}"
+      dnac_username: "{{ lookup('ansible.builtin.env', 'ANSIBLE_NET_USERNAME') }}"
+      dnac_password: "{{ lookup('ansible.builtin.env', 'ANSIBLE_NET_PASSWORD') }}"
+      dnac_verify: "{{dnac_verify}}"
+      dnac_port: "{{dnac_port}}"
+      dnac_version: "{{dnac_version}}"
+      dnac_debug: "{{dnac_debug}}"
+  tasks:
+    - name: Testing Connectivity to DNA Center...
+      cisco.dnac.system_health_info:
+        <<: *dnac_vars
+      register: health_info_result
+    
+    - name: Getting Platform Release summary...
+      cisco.dnac.platform_release_summary_info:
+        <<: *dnac_vars
+      register: platform_release_summary
+
+    - name: System Health Results
+      ansible.builtin.debug:
+        msg: "{{ health_info_result }}"
+    
+    - name: Platform Release Summary Results
+      ansible.builtin.debug:
+        msg: "{{ platform_release_summary }}"
