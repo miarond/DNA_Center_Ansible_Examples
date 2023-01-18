@@ -1,0 +1,10 @@
+---
+forcePush: true
+device_hostname: <hostname>
+template_name: <template_name>
+project_name: <project_name>
+port_name: GigabitEthernet
+module_number: 1
+slot_number: 1
+start_port: 3
+end_port: 3

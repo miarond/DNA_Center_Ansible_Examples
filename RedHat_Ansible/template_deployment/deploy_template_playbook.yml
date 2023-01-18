@@ -1,0 +1,95 @@
+---
+- name: Deploy Template
+  hosts: dnac_servers
+  any_errors_fatal: true
+  gather_facts: false
+  vars:
+    dnac_vars: &dnac_vars
+      dnac_host: "{{ dnac_host }}"
+      dnac_username: "{{ lookup('ansible.builtin.env', 'ANSIBLE_NET_USERNAME') }}"
+      dnac_password: "{{ lookup('ansible.builtin.env', 'ANSIBLE_NET_PASSWORD') }}"
+      dnac_verify: "{{ dnac_verify }}"
+      dnac_port: "{{ dnac_port }}"
+      dnac_version: "{{ dnac_version }}"
+      dnac_debug: "{{ dnac_debug }}"
+  vars_files:
+    - myvars.yml  # You can omit this file and pass variables another way
+  tasks:
+    - name: Obtaining Device UUID...
+      cisco.dnac.network_device_info:
+        <<: *dnac_vars
+        hostname:
+          - "{{ device_hostname }}" 
+      register: device_info
+    
+    - ansible.builtin.set_fact:
+        device_id: "{{ device_info.dnac_response.response.0.id  }}"
+    
+    - ansible.builtin.debug:
+        msg: "Found Device UUID: {{ device_id }}"
+
+    - name: Getting Template ID...
+      cisco.dnac.templates_details_info:
+        <<: *dnac_vars
+        name: "{{ template_name }}"
+        projectName: "{{ project_name }}"
+        unCommitted: true # Set to false if you don't want to search for  uncommitted templates
+      register: template_details
+    
+    - ansible.builtin.set_fact:
+        template_id: "{{ template_details.dnac_response.response.0.id  }}"
+    
+    - ansible.builtin.debug:
+        msg: "Found Template UUID: {{ template_id }}"
+    
+    - name: Deploying Template (Step 1)...
+      cisco.dnac.configuration_template_deploy:
+        <<: *dnac_vars
+        forcePushTemplate: "{{ forcePush }}"
+        isComposite: false
+        templateId: "{{ template_id }}"
+        targetInfo:
+        - id: "{{ device_id }}"
+          type: MANAGED_DEVICE_UUID  # Review "Deploy Template" API schema in your DNA Center Developer Toolkit for the most complete documentation
+          params:
+            port_name: "{{ port_name }}"
+            module_number: "{{ module_number }}"
+            slot_number: "{{ slot_number }}"
+            start_port: "{{ start_port }}"
+            end_port: "{{ end_port }}"
+      register: deployment_result
+      failed_when: deployment_result.failed == "true"
+
+    - name: Printing Results
+      ansible.builtin.debug:
+        var: deployment_result
+    
+# If using Deploy Template V2, you need this step to get the Deployment ID
+    # - name: Checking Task ID (Step 2)...
+    #   cisco.dnac.task_info:
+    #     <<: *dnac_vars
+    #     taskId: "{{ deployment_result.dnac_response.response.taskId }}"
+    #   register: task_result
+    #   failed_when: task_result.failed == "true"
+
+    # - name: Printing Results
+    #   ansible.builtin.debug:
+    #     var: task_result
+   
+    - name: Extracting Deployment ID
+      ansible.builtin.set_fact:
+        deployId: "{{ deployment_result.dnac_response.deploymentId.split(':') | last | trim }}"
+    
+    - name: Getting Deployment Status (Step 2)...
+      cisco.dnac.configuration_template_deploy_status_info:
+        <<: *dnac_vars
+        deploymentId: "{{ deployId }}"
+      register: deployment_status
+      until: deployment_status.dnac_response.status in ["SUCCESS", "FAILURE"]
+      failed_when: deployment_status.failed == "true"
+      retries: 5
+      delay: 5
+    
+    - name: Printing Results
+      ansible.builtin.debug:
+        var: deployment_status
