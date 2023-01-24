@@ -5,7 +5,7 @@
   gather_facts: false
   vars:
     dnac_vars: &dnac_vars
-      dnac_host: "{{ dnac_host }}"
+      dnac_host: "{{ inventory_hostname }}"
       dnac_username: "{{ lookup('ansible.builtin.env', 'ANSIBLE_NET_USERNAME') }}"
       dnac_password: "{{ lookup('ansible.builtin.env', 'ANSIBLE_NET_PASSWORD') }}"
       dnac_verify: "{{dnac_verify}}"
