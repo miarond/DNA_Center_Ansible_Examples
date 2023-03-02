@@ -1,0 +1,7 @@
+interface_name,description,port_mode,access_vlan,voice_vlan,native_vlan,allowed_vlans
+TenGigabitEthernet1/0/10,Ansible Automation - Port 1/0/10,access,5,10,,
+TenGigabitEthernet1/0/11,Ansible Automation - Port 1/0/11,access,5,,,
+TenGigabitEthernet1/0/12,Ansible Automation - Port 1/0/12,access,5,,,
+TenGigabitEthernet1/0/13,Ansible Automation - Port 1/0/13,trunk,,,5,all
+TenGigabitEthernet1/0/14,Ansible Automation - Port 1/0/14,trunk,,,,1-10
+TenGigabitEthernet1/0/15,Ansible Automation - Port 1/0/15,trunk,,,,1-10

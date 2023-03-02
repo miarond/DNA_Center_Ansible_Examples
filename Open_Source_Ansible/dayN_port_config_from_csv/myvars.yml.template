@@ -1,0 +1,9 @@
+---
+csv_file: "port_config.csv"
+preview: false # Preview Template: true, Push Template: false
+forcePush: true
+# Choose either hostname or IP, don't specify both
+device_hostname: "<device_hostname>"
+# device_ip: "<device_ip>"
+template_name: "<template_name>"
+project_name: "<template_project_name>"

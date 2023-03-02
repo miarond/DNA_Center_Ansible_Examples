@@ -1,5 +1,10 @@
 DS_Store
 .DS_Store
+credentials.yml
+credentials.yaml
+myvars.yml
+myvars.yaml
+inventory
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
