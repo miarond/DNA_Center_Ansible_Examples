@@ -1,0 +1,86 @@
+[
+  {
+    "name": "Ansible_CSV_Port_Config_Demo",
+    "description": "A demo Jinja template for configuring a range of switch ports, using Ansible and a CSV file for port configuration variables.",
+    "tags": [],
+    "deviceTypes": [
+      {
+        "productFamily": "Switches and Hubs"
+      }
+    ],
+    "softwareType": "IOS",
+    "softwareVariant": "XE",
+    "templateContent": "{# set csv = incoming JSON payload from CSV file #}\n{%- set csv = csv_data %}\n{#\nExample csv_data JSON Payload:\n[\n  {\n    \"interface_name\": \"TenGigabitEthernet1/0/10\",\n    \"description\": \"Example description\",\n    \"port_mode\": \"access\",\n    \"access_vlan\": \"1\",\n    \"voice_vlan\": \"10\",\n    \"native_vlan\": \"1\",\n    \"allowed_vlans\": \"1-10\"\n  },\n  {\n    ...\n  }\n]\n#}\n{%- for int in csv_data %}\ninterface {{ int.interface_name }}\n description {{ int.description }}\n{# Check if port_mode is \"access\" or \"trunk\" #}\n{%- if int.port_mode | lower == \"access\" %}\n switchport mode access\n switchport access vlan {{ int.access_vlan }}\n{# Check if voice_vlan was specified #}\n{%- if int.voice_vlan != \"\" %}\n switchport voice vlan {{ int.voice_vlan }}\n{% endif %}\n{%- elif int.port_mode | lower == \"trunk\" %}\n switchport mode trunk\n{# Check if native_vlan was specified #}\n{%- if int.native_vlan != \"\" %}\n switchport trunk native vlan {{ int.native_vlan }}\n{% endif %}\n switchport trunk allowed vlan {{ int.allowed_vlans }}\n{% endif %}\n no shutdown\n{% endfor %}",
+    "rollbackTemplateContent": "",
+    "templateParams": [
+      {
+        "parameterName": "csv_data",
+        "dataType": "STRING",
+        "defaultValue": null,
+        "description": null,
+        "required": true,
+        "notParam": false,
+        "paramArray": true,
+        "instructionText": null,
+        "group": null,
+        "order": 1,
+        "customOrder": 0,
+        "selection": {
+          "selectionType": "MULTI_SELECT",
+          "selectionValues": {},
+          "defaultSelectedValues": [],
+          "id": null
+        },
+        "range": [],
+        "key": null,
+        "provider": null,
+        "binding": "",
+        "displayName": null
+      }
+    ],
+    "rollbackTemplateParams": [],
+    "composite": false,
+    "containingTemplates": [],
+    "language": "JINJA",
+    "promotedTemplateContent": "{# set csv = incoming JSON payload from CSV file #}\n{%- set csv = csv_data %}\n{#\nExample csv_data JSON Payload:\n[\n  {\n    \"interface_name\": \"TenGigabitEthernet1/0/10\",\n    \"description\": \"Example description\",\n    \"port_mode\": \"access\",\n    \"access_vlan\": \"1\",\n    \"voice_vlan\": \"10\",\n    \"native_vlan\": \"1\",\n    \"allowed_vlans\": \"1-10\"\n  },\n  {\n    ...\n  }\n]\n#}\n{%- for int in csv_data %}\ninterface {{ int.interface_name }}\n description {{ int.description }}\n{# Check if port_mode is \"access\" or \"trunk\" #}\n{%- if int.port_mode | lower == \"access\" %}\n switchport mode access\n switchport access vlan {{ int.access_vlan }}\n{# Check if voice_vlan was specified #}\n{%- if int.voice_vlan != \"\" %}\n switchport voice vlan {{ int.voice_vlan }}\n{% endif %}\n{%- elif int.port_mode | lower == \"trunk\" %}\n switchport mode trunk\n{# Check if native_vlan was specified #}\n{%- if int.native_vlan != \"\" %}\n switchport trunk native vlan {{ int.native_vlan }}\n{% endif %}\n switchport trunk allowed vlan {{ int.allowed_vlans }}\n{% endif %}\n no shutdown\n{% endfor %}",
+    "promotedTemplateParams": [
+      {
+        "parameterName": "csv_data",
+        "dataType": "STRING",
+        "defaultValue": null,
+        "description": null,
+        "required": true,
+        "notParam": false,
+        "paramArray": true,
+        "instructionText": null,
+        "group": null,
+        "order": 1,
+        "customOrder": 0,
+        "selection": {
+          "selectionType": "MULTI_SELECT",
+          "selectionValues": {},
+          "defaultSelectedValues": [],
+          "id": null
+        },
+        "range": [],
+        "key": null,
+        "provider": null,
+        "binding": "",
+        "id": null,
+        "displayName": null
+      }
+    ],
+    "customParamsOrder": false,
+    "createTime": 1677698830613,
+    "lastUpdateTime": 1677705755181,
+    "latestVersionTime": 1677705767819,
+    "validationErrors": {
+      "templateErrors": [],
+      "rollbackTemplateErrors": [],
+      "templateId": "6a893e80-2ed9-4b33-a5da-e76a017aa3e8",
+      "templateVersion": null
+    },
+    "projectAssociated": true,
+    "documentDatabase": false
+  }
+]
