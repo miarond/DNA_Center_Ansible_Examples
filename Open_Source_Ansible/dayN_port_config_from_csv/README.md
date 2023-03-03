@@ -56,7 +56,7 @@ Example csv_data JSON Payload:
   }
 ]
 #}
-{%- for int in csv_data %}
+{%- for int in csv %}
 interface {{ int.interface_name }}
  description {{ int.description }}
 {# Check if port_mode is "access" or "trunk" #}
