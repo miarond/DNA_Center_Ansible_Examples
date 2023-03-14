@@ -41,7 +41,7 @@
       register: device_info_hostname
       when: device_hostname is defined
 
-    - name: Getting Device UUID by Hostname...
+    - name: Getting Device UUID by IP Address...
       cisco.dnac.network_device_info:
         <<: *dnac_vars
         managementIpAddress:
