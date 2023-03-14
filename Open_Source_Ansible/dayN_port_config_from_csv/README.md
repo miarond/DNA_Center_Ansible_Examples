@@ -34,6 +34,21 @@ The `ansible.cfg` file is optional and it contains Ansible-specific configuratio
   - Use Jinja2 as the templating language, which will preserve variables types when they are referenced in a Playbook.  This is important for instances where an Ansible Module requires some data in an data type *other* than String (i.e. if an option requires an Integer or Floating Point Number to be specified).  If this option is left to its default setting, Jinja will cast all variable data as Strings, regardless of how they are stored in the YAML file or in Ansible.
   - Enable the `profile_tasks` Callback method.  This setting turns on performance timers for every Playbook Task and generates a timing report when the Playbook finishes.  It allows you to see how long each task took to complete, and how long the overall Playbook ran.
 
+## Running the Ansible Playbook
+
+You can run the Ansible Playbook with the following command:  
+  - `ansible-playbook -i inventory port_config_from_csv.yml`
+
+  > **NOTE:** MacOS users may encounter an error similar to this, when running a DNA Center Ansible Playbook:
+  >    ```
+  >    objc[61816]: +[__NSCFConstantString initialize] may have been in progress in another thread when fork() was called.
+  >    objc[61816]: +[__NSCFConstantString initialize] may have been in progress in another thread when fork() was called. We cannot safely call it or ignore it in the fork() child process. Crashing instead.  Set a breakpoint on objc_initializeAfterForkError to debug.
+  >    ```
+  > If this occurs, run the following command before attempting to run the Ansible Playbook again:
+  >
+  > `export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES`
+## DNA Center Day-N Template
+
 The DNA Center Template for this demonstration is provided in the `Ansible_CSV_Port_Config_Template.json` file, and it must be imported directly into your DNA Center Template Editor as a new template in any Project folder.  The template contents are as follows:
 
 ```jinja
