@@ -1,0 +1,56 @@
+---
+- name: Get Compliance Details
+  hosts: dnac_servers
+  any_errors_fatal: true
+  gather_facts: false
+  vars:
+    # Used for YAML Anchor in Playbook, eliminates repeating code
+    dnac_vars: &dnac_vars
+      dnac_host: "{{ inventory_hostname }}"
+      dnac_username: "{{ lookup('ansible.builtin.env', 'ANSIBLE_NET_USERNAME') }}"
+      dnac_password: "{{ lookup('ansible.builtin.env', 'ANSIBLE_NET_PASSWORD') }}"
+      dnac_verify: "{{ dnac_verify }}"
+      dnac_port: "{{ dnac_port }}"
+      dnac_version: "{{ dnac_version }}"
+      dnac_debug: "{{ dnac_debug }}"
+  vars_files:
+    - myvars.yml  # You can omit this file and pass variables another way
+  tasks:
+    - name: Obtaining Device UUID...
+      cisco.dnac.network_device_info:
+        <<: *dnac_vars
+        hostname:
+          - "{{ device_hostname }}" 
+      register: device_info
+      when: device_hostname is defined
+    
+    - ansible.builtin.set_fact:
+        device_id: "{{ device_info.dnac_response.response.0.id }}"
+      when: device_hostname is defined
+    
+    - ansible.builtin.debug:
+        msg: "Found Device UUID: {{ device_id }}"
+      when: device_hostname is defined
+    
+    - name: Obtaining Compliance Details...
+      cisco.dnac.compliance_device_details_info:
+        <<: *dnac_vars
+        complianceType: "{{ compliance_type | default('') }}"
+        complianceStatus: "{{ compliance_status | default('') }}"
+        deviceUuid: "{{ device_id }}"
+      register: compliance_details
+      when: device_id is defined
+    
+    - ansible.builtin.debug:
+        var: compliance_details
+    
+    - name: Obtaining Compliance Details...
+      cisco.dnac.compliance_device_details_info:
+        <<: *dnac_vars
+        complianceType: "{{ compliance_type | default('') }}"
+        complianceStatus: "{{ compliance_status | default('') }}"
+      register: compliance_details
+      when: device_id is not defined
+    
+    - ansible.builtin.debug:
+        var: compliance_details
